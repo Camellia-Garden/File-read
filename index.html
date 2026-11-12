@@ -118,6 +118,14 @@
       <span>行距<output id="spacing-value" for="line-height"></output></span>
       <input type="range" id="line-height" min="1.4" max="2.6" step="0.1">
     </label>
+    <div class="settings-row slider-row">
+      <div class="slider-heading">
+        <label for="reader-width">正文宽度</label>
+        <output id="width-value" for="reader-width"></output>
+      </div>
+      <input type="range" id="reader-width" min="480" max="1400" step="20" aria-describedby="width-hint">
+      <p class="settings-hint" id="width-hint">小屏幕会按可用宽度显示。</p>
+    </div>
     <label class="settings-row encoding-row" id="encoding-row" hidden>
       <span>文件编码</span>
       <select id="encoding">

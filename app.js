@@ -29,7 +29,7 @@ const demo = {
     + "「好呀。」她把书翻开，捋平了方才折起的一角。"
 };
 
-const defaults = { theme: "light", font: "serif", size: 20, spacing: 2.0 };
+const defaults = { theme: "light", font: "serif", size: 20, spacing: 2.0, width: 880 };
 const settingsKey = "kotonoha:settings";
 const validThemes = ["light", "paper", "dark"];
 const validFonts = ["serif", "sans"];
@@ -69,7 +69,8 @@ function loadSettings() {
     theme: validThemes.includes(saved.theme) ? saved.theme : defaults.theme,
     font: validFonts.includes(saved.font) ? saved.font : defaults.font,
     size: Number.isFinite(saved.size) ? Math.min(36, Math.max(15, saved.size)) : defaults.size,
-    spacing: Number.isFinite(saved.spacing) ? Math.min(2.6, Math.max(1.4, saved.spacing)) : defaults.spacing
+    spacing: Number.isFinite(saved.spacing) ? Math.min(2.6, Math.max(1.4, saved.spacing)) : defaults.spacing,
+    width: Number.isFinite(saved.width) ? Math.min(1400, Math.max(480, saved.width)) : defaults.width
   };
 }
 
@@ -272,6 +273,7 @@ function applySettings() {
   root.style.setProperty("--reader-font", "var(--" + settings.font + ")");
   root.style.setProperty("--reader-size", settings.size + "px");
   root.style.setProperty("--reader-spacing", settings.spacing);
+  root.style.setProperty("--reader-width", settings.width + "px");
   const dark = settings.theme === "dark";
   $("theme-toggle").querySelector(".theme-symbol").textContent = dark ? "☼" : "☾";
   $("theme-label").textContent = dark ? "日间模式" : "夜间模式";
@@ -282,6 +284,8 @@ function applySettings() {
   $("line-height").value = settings.spacing;
   $("size-value").value = settings.size + " px";
   $("spacing-value").value = settings.spacing.toFixed(1);
+  $("reader-width").value = settings.width;
+  $("width-value").value = settings.width + " px";
 }
 
 function updateSettings(updates) {
@@ -552,6 +556,7 @@ function bindEvents() {
     if (name === "theme" || name === "font") updateSettings({ [name]: value });
     if (id === "font-size") updateSettings({ size: Number(value) });
     if (id === "line-height") updateSettings({ spacing: Number(value) });
+    if (id === "reader-width") updateSettings({ width: Number(value) });
   });
   $("encoding").addEventListener("change", (event) => changeEncoding(event.target.value));
   removeDialog.addEventListener("close", () => {
