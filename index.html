@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="纸间是一款本地 TXT 小说阅读器。导入文件，即可像看小说一样阅读。">
+  <meta name="color-scheme" content="light dark">
+  <title>纸间 · TXT 阅读器</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <div class="library" id="library">
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="纸间书架">
+        <span class="brand-mark"><i class="icon icon-book"></i></span>
+        <span>纸间<small>KOTONOHA</small></span>
+      </a>
+      <nav class="navigation" aria-label="主导航">
+        <button class="nav-item current" type="button" aria-current="page" id="home"><i class="icon icon-book"></i><span>我的书架</span></button>
+        <button class="nav-item" type="button" data-settings><i class="icon icon-sliders"></i><span>阅读设置</span></button>
+      </nav>
+      <div class="local-note">
+        <span class="local-mark"><i class="icon icon-lock"></i></span>
+        <span><strong>本地书架</strong><small>文件仅保存在此浏览器</small></span>
+      </div>
+    </aside>
+
+    <main class="library-main">
+      <header class="library-header">
+        <h1 tabindex="-1" id="library-heading">我的书架</h1>
+        <button class="button theme-toggle" id="theme-toggle" type="button"><span class="theme-symbol" aria-hidden="true">☾</span><span id="theme-label">夜间模式</span></button>
+      </header>
+
+      <section class="welcome" id="drop-zone" aria-labelledby="welcome-title">
+        <div class="welcome-art" aria-hidden="true"></div>
+        <div class="welcome-content">
+          <p class="welcome-label"><span aria-hidden="true">✦</span> TXT 小说阅读器</p>
+          <h2 id="welcome-title">在纸间，<br><em>读一会儿。</em></h2>
+          <p class="welcome-description">把 TXT 放进书架，像看小说一样慢慢读。</p>
+          <div class="import-actions">
+            <button class="button primary" type="button" data-import><i class="icon icon-upload"></i>导入 TXT</button>
+            <span class="drag-hint">或将文件拖到这里</span>
+          </div>
+        </div>
+        <p class="drop-message" aria-hidden="true"><i class="icon icon-upload"></i> 松开以导入 TXT</p>
+      </section>
+
+      <section class="collection" aria-labelledby="collection-title">
+        <header class="section-header">
+          <h2 id="collection-title">书架藏书</h2>
+          <span class="book-count" id="book-count"></span>
+        </header>
+        <div class="shelf">
+          <div class="book-list" id="book-list"></div>
+          <button class="add-book" type="button" data-import>
+            <span class="add-mark" aria-hidden="true">＋</span>
+            <span><strong>添加书籍</strong><small>选择本地 TXT 文件</small></span>
+          </button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <section class="reader" id="reader" aria-label="小说阅读器" hidden>
+    <header class="reader-header">
+      <button class="button back-button" id="back" type="button"><span class="arrow" aria-hidden="true">←</span> <span>书架</span></button>
+      <div class="reader-book" id="reader-book"></div>
+      <div class="reader-tools">
+        <button class="button" id="open-chapters" type="button"><i class="icon icon-list"></i><span>目录</span></button>
+        <button class="button" type="button" data-settings><i class="icon icon-sliders"></i><span>设置</span></button>
+      </div>
+    </header>
+    <div class="reader-scroll" id="reader-scroll" tabindex="0" aria-label="阅读正文">
+      <article class="reader-page">
+        <header class="chapter-header">
+          <span class="chapter-index" id="chapter-index"></span>
+          <h1 id="chapter-title" tabindex="-1"></h1>
+        </header>
+        <div class="reader-text" id="reader-text"></div>
+      </article>
+    </div>
+    <footer class="reader-footer">
+      <button class="button" id="prev" type="button"><span aria-hidden="true">←</span> 上一节</button>
+      <div class="reader-progress">
+        <progress id="progress-bar" max="100" value="0" aria-label="全书阅读进度"></progress>
+        <span id="progress-label"></span>
+      </div>
+      <button class="button" id="next" type="button">下一节 <span aria-hidden="true">→</span></button>
+    </footer>
+  </section>
+
+  <dialog id="settings" class="settings" aria-labelledby="settings-title">
+    <header class="dialog-header">
+      <h2 id="settings-title">阅读设置</h2>
+      <form method="dialog"><button class="button close-button" aria-label="关闭阅读设置">×</button></form>
+    </header>
+    <fieldset class="settings-row">
+      <legend>主题</legend>
+      <div class="choice-row">
+        <label class="choice"><input type="radio" name="theme" value="light">日间</label>
+        <label class="choice"><input type="radio" name="theme" value="paper">护眼</label>
+        <label class="choice"><input type="radio" name="theme" value="dark">夜间</label>
+      </div>
+    </fieldset>
+    <fieldset class="settings-row">
+      <legend>字体</legend>
+      <div class="choice-row">
+        <label class="choice"><input type="radio" name="font" value="serif">宋体</label>
+        <label class="choice"><input type="radio" name="font" value="sans">黑体</label>
+      </div>
+    </fieldset>
+    <label class="settings-row slider-row">
+      <span>字号<output id="size-value" for="font-size"></output></span>
+      <input type="range" id="font-size" min="15" max="36" step="1">
+    </label>
+    <label class="settings-row slider-row">
+      <span>行距<output id="spacing-value" for="line-height"></output></span>
+      <input type="range" id="line-height" min="1.4" max="2.6" step="0.1">
+    </label>
+    <label class="settings-row encoding-row" id="encoding-row" hidden>
+      <span>文件编码</span>
+      <select id="encoding">
+        <option value="auto">自动识别</option>
+        <option value="utf-8">UTF-8</option>
+        <option value="gb18030">GB18030 / GBK</option>
+        <option value="big5">Big5</option>
+        <option value="utf-16le">UTF-16 LE</option>
+        <option value="utf-16be">UTF-16 BE</option>
+        <option value="shift_jis">Shift JIS</option>
+      </select>
+    </label>
+    <p id="encoding-error" class="encoding-error" role="alert" hidden>无法使用所选编码读取这个文件。</p>
+  </dialog>
+
+  <dialog id="chapters" class="chapters" aria-labelledby="chapters-title">
+    <header class="dialog-header">
+      <h2 id="chapters-title">章节目录</h2>
+      <form method="dialog"><button class="button close-button" aria-label="关闭章节目录">×</button></form>
+    </header>
+    <div class="chapter-list" id="chapter-list"></div>
+  </dialog>
+
+  <dialog id="remove-dialog" class="remove-dialog" aria-labelledby="remove-title">
+    <header class="dialog-header"><h2 id="remove-title">移出书架</h2></header>
+    <p id="remove-description"></p>
+    <form method="dialog" class="dialog-actions">
+      <button class="button" value="cancel" autofocus>取消</button>
+      <button class="button danger" value="remove">移出</button>
+    </form>
+  </dialog>
+
+  <input type="file" id="file-picker" accept=".txt,text/plain" multiple hidden>
+  <div class="toast" id="status" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">请启用 JavaScript 以导入和阅读 TXT。</p></noscript>
+</body>
+</html>
